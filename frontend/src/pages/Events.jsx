@@ -1,67 +1,108 @@
 import { useEffect, useState } from "react";
-import api from "../utils/api";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const Events = () => {
+function Events() {
   const [events, setEvents] = useState([]);
-
-  const fetchEvents = async () => {
-    try {
-      const { data } = await api.get("/events");
-      setEvents(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchEvents();
   }, []);
 
-  const bookEventHandler = async (eventId) => {
+  const fetchEvents = async () => {
     try {
-      await api.post("/bookings", { event: eventId });
-      alert("Booking successful");
-    } catch (error) {
-      alert(error.response?.data?.message || "Booking failed");
+      setLoading(true);
+
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get("http://localhost:5001/api/events", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setEvents(res.data);
+      setError("");
+    } catch (err) {
+      console.error("FETCH EVENTS ERROR:", err);
+      setError(err.response?.data?.message || "Failed to load events");
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleBookNow = (eventItem) => {
+    navigate(`/book/event/${eventItem._id}`, { state: { item: eventItem } });  };
+
+  if (loading) {
+    return <div className="p-6 text-center">Loading events...</div>;
+  }
+
+  if (error) {
+    return <div className="p-6 text-center text-red-600">{error}</div>;
+  }
+
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold text-slate-800">Upcoming Events</h2>
-        <p className="text-slate-500 mt-2">
-          Browse and book available events
-        </p>
-      </div>
+    <div className="min-h-screen bg-slate-50 p-6">
+      <h1 className="text-3xl font-bold text-center mb-8">Available Events</h1>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events.map((event) => (
-          <div
-            key={event._id}
-            className="bg-white rounded-2xl shadow-md p-6 border border-slate-100"
-          >
-            <h3 className="text-xl font-semibold text-slate-800">{event.title}</h3>
-            <p className="text-slate-600 mt-2">{event.description}</p>
-            <p className="mt-4 text-slate-700">
-              <span className="font-semibold">Date:</span>{" "}
-              {new Date(event.date).toLocaleDateString()}
-            </p>
-            <p className="text-slate-700">
-              <span className="font-semibold">Venue:</span> {event.venue?.name}
-            </p>
-
-            <button
-              onClick={() => bookEventHandler(event._id)}
-              className="mt-5 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition"
+      {events.length === 0 ? (
+        <p className="text-center text-gray-600">No events available</p>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {events.map((eventItem) => (
+            <div
+              key={eventItem._id}
+              className="bg-white rounded-2xl shadow-md p-5 border"
             >
-              Book Now
-            </button>
-          </div>
-        ))}
-      </div>
+              {eventItem.image && (
+                <img
+                  src={eventItem.image}
+                  alt={eventItem.title}
+                  className="w-full h-48 object-cover rounded-xl mb-4"
+                />
+              )}
+
+              <h2 className="text-xl font-semibold mb-2">
+                {eventItem.title || eventItem.name}
+              </h2>
+
+              <p className="text-gray-600 mb-2">
+                <span className="font-medium">Venue:</span>{" "}
+                {eventItem.venue || "Not specified"}
+              </p>
+
+              <p className="text-gray-600 mb-2">
+                <span className="font-medium">Date:</span>{" "}
+                {eventItem.date
+                  ? new Date(eventItem.date).toLocaleDateString()
+                  : "Not specified"}
+              </p>
+
+              <p className="text-gray-600 mb-2">
+                <span className="font-medium">Price:</span> ₹
+                {eventItem.price || 0}
+              </p>
+
+              <p className="text-gray-700 mb-4">
+                {eventItem.description || "No description available"}
+              </p>
+
+              <button
+                onClick={() => handleBookNow(eventItem)}
+                className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700"
+              >
+                Book Now
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
-};
+}
 
 export default Events;

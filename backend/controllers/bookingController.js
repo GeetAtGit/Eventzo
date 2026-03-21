@@ -1,50 +1,80 @@
 const Booking = require("../models/Booking");
+const Event = require("../models/Event");
+const Venue = require("../models/Venue");
 
-exports.createBooking = async (req, res) => {
+const createBooking = async (req, res) => {
   try {
-    const { event } = req.body;
+    const { type, eventId, venueId, guests, bookingDate, paymentMethod } = req.body;
 
-    const booking = await Booking.create({
-      user: req.user.id,
-      event,
-    });
+    let bookingData = {
+      user: req.user._id,
+      type,
+      guests: guests || 1,
+      bookingDate,
+      paymentMethod: paymentMethod || "Cash",
+      status: "Pending",
+    };
 
-    res.status(201).json({
-      message: "Booking created successfully",
-      booking,
-    });
+    if (type === "event") {
+      const event = await Event.findById(eventId);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+
+      bookingData.event = eventId;
+      bookingData.totalPrice = event.price || 0;
+    } else if (type === "venue") {
+      const venue = await Venue.findById(venueId);
+      if (!venue) {
+        return res.status(404).json({ message: "Venue not found" });
+      }
+
+      bookingData.venue = venueId;
+      bookingData.totalPrice = venue.price || 0;
+    } else {
+      return res.status(400).json({ message: "Invalid booking type" });
+    }
+
+    const booking = await Booking.create(bookingData);
+
+    res.status(201).json(booking);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("CREATE BOOKING ERROR:", error);
+    res.status(500).json({ message: "Failed to create booking" });
   }
 };
 
-exports.getMyBookings = async (req, res) => {
+const getMyBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ user: req.user.id })
-      .populate({
-        path: "event",
-        populate: { path: "venue" },
-      })
+    const bookings = await Booking.find({ user: req.user._id })
+      .populate("event")
+      .populate("venue")
       .sort({ createdAt: -1 });
 
-    res.json(bookings);
+    res.status(200).json(bookings);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("GET MY BOOKINGS ERROR:", error);
+    res.status(500).json({ message: "Failed to fetch your bookings" });
   }
 };
 
-exports.getAllBookings = async (req, res) => {
+const getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find()
       .populate("user", "name email")
-      .populate({
-        path: "event",
-        populate: { path: "venue" },
-      })
+      .populate("event")
+      .populate("venue")
       .sort({ createdAt: -1 });
 
-    res.json(bookings);
+    res.status(200).json(bookings);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("GET ALL BOOKINGS ERROR:", error);
+    res.status(500).json({ message: "Failed to fetch bookings" });
   }
+};
+
+module.exports = {
+  createBooking,
+  getMyBookings,
+  getAllBookings,
 };

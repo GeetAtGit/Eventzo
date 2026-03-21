@@ -7,6 +7,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Venues from "./pages/Venues";
 import Events from "./pages/Events";
 import MyBookings from "./pages/MyBookings";
+import BookEvent from "./pages/BookEvent";
 
 function App() {
   return (
@@ -49,6 +50,15 @@ function App() {
           element={
             <ProtectedRoute>
               <MyBookings />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/book/:type/:id"
+          element={
+            <ProtectedRoute>
+              <BookEvent />
             </ProtectedRoute>
           }
         />

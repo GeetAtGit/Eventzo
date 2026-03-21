@@ -7,19 +7,40 @@ const bookingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    type: {
+      type: String,
+      enum: ["event", "venue"],
+      required: true,
+    },
     event: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Event",
-      required: true,
+      default: null,
+    },
+    venue: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Venue",
+      default: null,
+    },
+    guests: {
+      type: Number,
+      default: 1,
     },
     bookingDate: {
       type: Date,
-      default: Date.now,
+      required: true,
+    },
+    paymentMethod: {
+      type: String,
+      default: "Cash",
+    },
+    totalPrice: {
+      type: Number,
+      default: 0,
     },
     status: {
       type: String,
-      enum: ["confirmed", "cancelled"],
-      default: "confirmed",
+      default: "Pending",
     },
   },
   { timestamps: true }

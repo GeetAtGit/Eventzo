@@ -5,10 +5,10 @@ const {
   getMyBookings,
   getAllBookings,
 } = require("../controllers/bookingController");
-const { protect, adminOnly } = require("../middleware/authMiddleware");
+const { protect } = require("../middleware/authMiddleware");
 
 router.post("/", protect, createBooking);
 router.get("/my", protect, getMyBookings);
-router.get("/", protect, adminOnly, getAllBookings);
+router.get("/", protect, getAllBookings);
 
 module.exports = router;

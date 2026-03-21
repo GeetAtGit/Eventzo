@@ -1,68 +1,79 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-const Navbar = () => {
+function Navbar() {
+  const location = useLocation();
   const navigate = useNavigate();
 
-  let userInfo = null;
-  try {
-    const stored = localStorage.getItem("userInfo");
-    userInfo = stored ? JSON.parse(stored) : null;
-  } catch {
-    localStorage.removeItem("userInfo");
-    userInfo = null;
-  }
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
-  const logoutHandler = () => {
-    localStorage.removeItem("userInfo");
+  const isLoggedIn = !!token;
+
+  const hideNavbar =
+    location.pathname === "/login" || location.pathname === "/register";
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     navigate("/login");
+    window.location.reload();
   };
 
-  return (
-    <nav className="bg-slate-900 text-white shadow-md">
-      <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-wide">Eventzo</h1>
+  if (hideNavbar) return null;
 
-        <div className="flex items-center gap-4 text-sm md:text-base">
-          {!userInfo ? (
-            <>
-              <Link to="/login" className="hover:text-blue-300 transition">
-                Login
+  return (
+    <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
+      <Link
+        to={user?.isAdmin ? "/admin" : "/events"}
+        className="text-2xl font-bold text-blue-600"
+      >
+        Eventzo
+      </Link>
+
+      <div className="flex items-center gap-4">
+        {isLoggedIn ? (
+          <>
+            {user?.isAdmin ? (
+              <Link to="/admin" className="text-gray-700 hover:text-blue-600">
+                Admin Dashboard
               </Link>
-              <Link
-                to="/register"
-                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition"
-              >
-                Register
-              </Link>
-            </>
-          ) : (
-            <>
-              {userInfo?.isAdmin && (
-                <Link to="/admin" className="hover:text-blue-300 transition">
-                  Admin
+            ) : (
+              <>
+                <Link to="/events" className="text-gray-700 hover:text-blue-600">
+                  Events
                 </Link>
-              )}
-              <Link to="/venues" className="hover:text-blue-300 transition">
-                Venues
-              </Link>
-              <Link to="/events" className="hover:text-blue-300 transition">
-                Events
-              </Link>
-              <Link to="/my-bookings" className="hover:text-blue-300 transition">
-                My Bookings
-              </Link>
-              <button
-                onClick={logoutHandler}
-                className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition"
-              >
-                Logout
-              </button>
-            </>
-          )}
-        </div>
+                <Link to="/venues" className="text-gray-700 hover:text-blue-600">
+                  Venues
+                </Link>
+                <Link
+                  to="/my-bookings"
+                  className="text-gray-700 hover:text-blue-600"
+                >
+                  My Bookings
+                </Link>
+              </>
+            )}
+
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="text-gray-700 hover:text-blue-600">
+              Login
+            </Link>
+            <Link to="/register" className="text-gray-700 hover:text-blue-600">
+              Register
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );
-};
+}
 
 export default Navbar;
