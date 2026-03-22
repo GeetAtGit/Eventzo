@@ -8,6 +8,7 @@ import {
   LogIn,
   UserPlus,
   Sparkles,
+  UserCircle,
 } from "lucide-react";
 
 function Navbar() {
@@ -82,6 +83,11 @@ function Navbar() {
                   >
                     <ClipboardList className="h-4 w-4" />
                     My Bookings
+                  </Link>
+
+                  <Link to="/profile" className={getLinkClass("/profile")}>
+                    <UserCircle className="h-4 w-4" />
+                    Profile
                   </Link>
                 </>
               )}

@@ -9,6 +9,7 @@ import Events from "./pages/Events";
 import MyBookings from "./pages/MyBookings";
 import BookEvent from "./pages/BookEvent";
 import LandingPage from "./pages/LandingPage";
+import Profile from "./pages/Profile";
 
 
 function App() {
@@ -61,6 +62,15 @@ function App() {
           element={
             <ProtectedRoute>
               <BookEvent />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />
