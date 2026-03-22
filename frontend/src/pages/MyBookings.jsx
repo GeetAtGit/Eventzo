@@ -9,6 +9,7 @@ import {
   Ticket,
   Building2,
   ImageOff,
+  Clock3,
 } from "lucide-react";
 
 function MyBookings() {
@@ -46,7 +47,7 @@ function MyBookings() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-orange-50 px-4 py-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-800">My Bookings</h1>
@@ -63,6 +64,18 @@ function MyBookings() {
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {bookings.map((booking) => {
               const item = booking.type === "event" ? booking.event : booking.venue;
+
+              const unitPrice = Number(item?.price ?? booking.price ?? 0);
+
+              const quantity =
+                booking.type === "event"
+                  ? Number(booking.guests ?? booking.tickets ?? 1)
+                  : Number(booking.days ?? 1);
+
+              const totalPrice =
+                booking.totalPrice != null
+                  ? Number(booking.totalPrice)
+                  : unitPrice * quantity;
 
               return (
                 <div
@@ -118,10 +131,17 @@ function MyBookings() {
                         </div>
                       )}
 
-                      <div className="flex items-center gap-2">
-                        <Users size={15} className="text-slate-400" />
-                        <span>{booking.guests} guest(s)</span>
-                      </div>
+                      {booking.type === "event" ? (
+                        <div className="flex items-center gap-2">
+                          <Users size={15} className="text-slate-400" />
+                          <span>{quantity} ticket(s)</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Clock3 size={15} className="text-slate-400" />
+                          <span>{quantity} day(s)</span>
+                        </div>
+                      )}
 
                       <div className="flex items-center gap-2">
                         <CalendarDays size={15} className="text-slate-400" />
@@ -134,12 +154,18 @@ function MyBookings() {
 
                       <div className="flex items-center gap-2">
                         <CreditCard size={15} className="text-slate-400" />
-                        <span>{booking.paymentMethod}</span>
+                        <span>{booking.paymentMethod || "Cash"}</span>
                       </div>
 
                       <div className="flex items-center gap-2">
                         <BadgeIndianRupee size={15} className="text-slate-400" />
-                        <span>₹{booking.totalPrice || item?.price || 0}</span>
+                        <span className="font-medium text-slate-800">
+                          ₹{totalPrice}
+                        </span>
+                      </div>
+
+                      <div className="text-xs text-slate-400 pl-6">
+                        ₹{unitPrice} × {quantity}
                       </div>
                     </div>
 
@@ -153,7 +179,7 @@ function MyBookings() {
                             : "bg-slate-100 text-slate-700"
                         }`}
                       >
-                        {booking.status}
+                        {booking.status || "Pending"}
                       </span>
 
                       <div className="flex items-center gap-1 text-slate-400">

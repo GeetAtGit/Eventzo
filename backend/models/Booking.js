@@ -7,11 +7,6 @@ const bookingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    type: {
-      type: String,
-      enum: ["event", "venue"],
-      required: true,
-    },
     event: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Event",
@@ -22,9 +17,18 @@ const bookingSchema = new mongoose.Schema(
       ref: "Venue",
       default: null,
     },
+    type: {
+      type: String,
+      enum: ["event", "venue"],
+      required: true,
+    },
     guests: {
       type: Number,
-      default: 1,
+      default: null,
+    },
+    days: {
+      type: Number,
+      default: null,
     },
     bookingDate: {
       type: Date,
@@ -32,6 +36,7 @@ const bookingSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
+      enum: ["Cash", "Online"],
       default: "Cash",
     },
     totalPrice: {
@@ -40,6 +45,7 @@ const bookingSchema = new mongoose.Schema(
     },
     status: {
       type: String,
+      enum: ["Pending", "Confirmed", "Cancelled"],
       default: "Pending",
     },
   },

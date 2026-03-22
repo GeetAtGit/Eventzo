@@ -74,11 +74,8 @@ const Venues = () => {
     <div className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-orange-50 px-4 py-8 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <div className="mb-10 text-center">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white/80 px-4 py-2 text-sm font-medium text-rose-700 shadow-sm">
-            <Sparkles className="h-4 w-4" />
-            Find your perfect venue
-          </div>
+        <div className="mb-10 ">
+          
 
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
             Available Venues
