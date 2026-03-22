@@ -10,6 +10,10 @@ import MyBookings from "./pages/MyBookings";
 import BookEvent from "./pages/BookEvent";
 import LandingPage from "./pages/LandingPage";
 import Profile from "./pages/Profile";
+import ManageEvents from "./pages/ManageEvents";
+import ManageVenues from "./pages/ManageVenues";
+import ManageBookings from "./pages/ManageBookings";
+import ManageUsers from "./pages/ManageUsers";
 
 
 function App() {
@@ -74,6 +78,42 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/events"
+          element={
+            <ProtectedRoute adminOnly={true}>
+              <ManageEvents />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/venues"
+          element={
+            <ProtectedRoute adminOnly={true}>
+              <ManageVenues />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/bookings"
+          element={
+            <ProtectedRoute adminOnly={true}>
+              <ManageBookings />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute adminOnly={true}>
+              <ManageUsers />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </div>

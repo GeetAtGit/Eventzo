@@ -20,7 +20,7 @@ const registerUser = async (req, res) => {
       name,
       email,
       password,
-      isAdmin: isAdmin || false,
+      isAdmin: req.body.isAdmin,
     });
 
     if (user) {

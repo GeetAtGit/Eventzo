@@ -4,11 +4,11 @@ function ProtectedRoute({ children, adminOnly = false }) {
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
-  if (!token) {
+  if (!token || !user) {
     return <Navigate to="/login" replace />;
   }
 
-  if (adminOnly && !user?.isAdmin) {
+  if (adminOnly && !user.isAdmin) {
     return <Navigate to="/events" replace />;
   }
 
