@@ -2,6 +2,7 @@ const Booking = require("../models/Booking");
 const Event = require("../models/Event");
 const Venue = require("../models/Venue");
 
+// CREATE BOOKING
 const createBooking = async (req, res) => {
   try {
     const {
@@ -80,6 +81,7 @@ const createBooking = async (req, res) => {
   }
 };
 
+// GET MY BOOKINGS
 const getMyBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ user: req.user._id })
@@ -94,7 +96,60 @@ const getMyBookings = async (req, res) => {
   }
 };
 
+// ADMIN: GET ALL BOOKINGS
+const getAllBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find()
+      .populate("user", "name email isAdmin")
+      .populate("event")
+      .populate("venue")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(bookings);
+  } catch (error) {
+    console.error("GET ALL BOOKINGS ERROR:", error);
+    res.status(500).json({ message: "Failed to fetch all bookings" });
+  }
+};
+
+// ADMIN: UPDATE BOOKING STATUS
+const updateBookingStatus = async (req, res) => {
+  try {
+    console.log("UPDATE BOOKING STATUS BODY:", req.body);
+    console.log("BOOKING ID:", req.params.id);
+
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ message: "Status is required" });
+    }
+
+    if (!["Pending", "Confirmed", "Cancelled"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    booking.status = status;
+
+    const updatedBooking = await booking.save();
+
+    res.status(200).json(updatedBooking);
+  } catch (error) {
+    console.error("UPDATE BOOKING STATUS ERROR FULL:", error);
+    res.status(500).json({
+      message: error.message || "Failed to update booking status",
+    });
+  }
+};
+
 module.exports = {
   createBooking,
   getMyBookings,
+  getAllBookings,
+  updateBookingStatus,
 };
