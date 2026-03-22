@@ -9,11 +9,13 @@ const app = express();
 
 connectDB();
 
-app.use(cors({
-  origin: "http://localhost:5173",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
@@ -25,8 +27,6 @@ app.use("/api/bookings", require("./routes/bookingRoutes"));
 app.get("/", (req, res) => {
   res.send("Eventzo API is running");
 });
-
-console.log("JWT_SECRET loaded:", process.env.JWT_SECRET);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
