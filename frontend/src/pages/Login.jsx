@@ -1,15 +1,19 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { FiMail, FiLock } from "react-icons/fi";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       setError("");
@@ -19,79 +23,92 @@ function Login() {
         password,
       });
 
-      console.log("LOGIN SUCCESS:", res.data);
-
-      // ✅ Save token and user
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data));
 
-      // ✅ Redirect based on role
       if (res.data.isAdmin) {
         navigate("/admin");
       } else {
         navigate("/events");
       }
 
-      // ✅ Force navbar to update
       window.location.reload();
-
     } catch (err) {
-      console.error("LOGIN ERROR:", err);
-      console.error("LOGIN ERROR DATA:", err.response?.data);
-
       setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md"
-      >
-        <h1 className="text-2xl font-bold text-center mb-6">
-          Login to Eventzo
-        </h1>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+      <div className="w-full max-w-sm bg-white rounded-2xl border border-slate-200 shadow-sm p-7">
+        {/* Header */}
+        <div className="mb-7 text-center">
+          <h1 className="text-2xl font-semibold text-slate-900">
+            Welcome back
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Login to continue booking your events
+          </p>
+        </div>
 
+        {/* Error */}
         {error && (
-          <p className="text-red-600 text-sm mb-4 text-center">{error}</p>
+          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 text-center">
+            {error}
+          </div>
         )}
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full border rounded-lg p-3 mb-4"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        {/* Form */}
+        <form onSubmit={handleLogin} className="space-y-4">
+          {/* Email */}
+          <div className="relative">
+            <FiMail className="absolute left-3 top-3.5 text-slate-400" />
+            <input
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full rounded-xl border border-slate-300 pl-10 pr-4 py-3 text-slate-900 placeholder:text-slate-400 outline-none focus:border-slate-900 transition"
+            />
+          </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full border rounded-lg p-3 mb-6"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+          {/* Password */}
+          <div className="relative">
+            <FiLock className="absolute left-3 top-3.5 text-slate-400" />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full rounded-xl border border-slate-300 pl-10 pr-4 py-3 text-slate-900 placeholder:text-slate-400 outline-none focus:border-slate-900 transition"
+            />
+          </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
-        >
-          Login
-        </button>
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-xl bg-slate-900 py-3 text-sm font-medium text-white hover:bg-slate-800 transition disabled:opacity-70"
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
 
-        <p className="text-center text-sm mt-4">
+        {/* Footer */}
+        <p className="mt-6 text-center text-sm text-slate-500">
           Don’t have an account?{" "}
-          <span
-            onClick={() => navigate("/register")}
-            className="text-blue-600 cursor-pointer hover:underline"
+          <Link
+            to="/register"
+            className="text-slate-900 font-medium hover:underline"
           >
             Register
-          </span>
+          </Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 }

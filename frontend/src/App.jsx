@@ -8,13 +8,15 @@ import Venues from "./pages/Venues";
 import Events from "./pages/Events";
 import MyBookings from "./pages/MyBookings";
 import BookEvent from "./pages/BookEvent";
+import LandingPage from "./pages/LandingPage";
+
 
 function App() {
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -62,6 +64,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </div>
   );

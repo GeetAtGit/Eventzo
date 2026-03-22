@@ -24,7 +24,7 @@ function Navbar() {
   return (
     <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
       <Link
-        to={user?.isAdmin ? "/admin" : "/events"}
+        to={user?.isAdmin ? "/admin" : "/LandingPage"}
         className="text-2xl font-bold text-blue-600"
       >
         Eventzo
