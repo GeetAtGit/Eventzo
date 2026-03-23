@@ -156,10 +156,7 @@ export default function LandingPage() {
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-6 py-14 md:px-10 lg:grid-cols-2 lg:py-20">
           {/* Left content */}
           <div>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white/80 px-4 py-2 text-sm font-medium text-rose-700 shadow-sm backdrop-blur">
-              <Sparkles className="h-4 w-4" />
-              Your all-in-one event booking platform
-            </div>
+            
 
             <h1 className="max-w-xl text-4xl font-extrabold leading-tight tracking-tight text-slate-900 md:text-5xl lg:text-6xl">
               {heroSlides[currentSlide].title}

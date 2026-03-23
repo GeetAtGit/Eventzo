@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
+const adminRoutes = require("./routes/adminRoutes");
+
 
 dotenv.config({ path: "./.env" });
 
@@ -23,6 +25,8 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/venues", require("./routes/venueRoutes"));
 app.use("/api/events", require("./routes/eventRoutes"));
 app.use("/api/bookings", require("./routes/bookingRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.send("Eventzo API is running");

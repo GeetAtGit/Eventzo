@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -14,105 +13,53 @@ import ManageEvents from "./pages/ManageEvents";
 import ManageVenues from "./pages/ManageVenues";
 import ManageBookings from "./pages/ManageBookings";
 import ManageUsers from "./pages/ManageUsers";
-
+import Layout from "./components/Layout";
 
 function App() {
   return (
     <div className="min-h-screen bg-slate-50">
-      <Navbar />
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        {/* Public routes */}
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <LandingPage />
+            </Layout>
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
+        {/* Logged-in user layout routes */}
         <Route
-          path="/admin"
-          element={
-            <ProtectedRoute adminOnly={true}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/venues"
           element={
             <ProtectedRoute>
-              <Venues />
+              <Layout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="/events" element={<Events />} />
+          <Route path="/venues" element={<Venues />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/book/:type/:id" element={<BookEvent />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
 
+        {/* Admin routes */}
         <Route
-          path="/events"
-          element={
-            <ProtectedRoute>
-              <Events />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/my-bookings"
-          element={
-            <ProtectedRoute>
-              <MyBookings />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/book/:type/:id"
-          element={
-            <ProtectedRoute>
-              <BookEvent />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/events"
           element={
             <ProtectedRoute adminOnly={true}>
-              <ManageEvents />
+              <Layout />
             </ProtectedRoute>
           }
-        />
-
-        <Route
-          path="/admin/venues"
-          element={
-            <ProtectedRoute adminOnly={true}>
-              <ManageVenues />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/bookings"
-          element={
-            <ProtectedRoute adminOnly={true}>
-              <ManageBookings />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/users"
-          element={
-            <ProtectedRoute adminOnly={true}>
-              <ManageUsers />
-            </ProtectedRoute>
-          }
-        />
+        >
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/events" element={<ManageEvents />} />
+          <Route path="/admin/venues" element={<ManageVenues />} />
+          <Route path="/admin/bookings" element={<ManageBookings />} />
+          <Route path="/admin/users" element={<ManageUsers />} />
+        </Route>
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
