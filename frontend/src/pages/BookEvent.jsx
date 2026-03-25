@@ -13,6 +13,8 @@ import {
   Clock3,
 } from "lucide-react";
 
+const BOOKING_API = import.meta.env.VITE_BOOKING_API;
+
 function BookEvent() {
   const { type, id } = useParams();
   const location = useLocation();
@@ -65,7 +67,7 @@ function BookEvent() {
 
       console.log("BOOKING PAYLOAD:", payload);
 
-      await axios.post("http://localhost:5001/api/bookings", payload, {
+      await axios.post(`${BOOKING_API}/api/bookings`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

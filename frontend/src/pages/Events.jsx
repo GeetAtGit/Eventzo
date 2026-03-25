@@ -19,6 +19,8 @@ function Events() {
   const [selectedVenue, setSelectedVenue] = useState("All");
   const [sortBy, setSortBy] = useState("default");
 
+  const CATALOG_API = import.meta.env.VITE_CATALOG_API;
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,7 +33,7 @@ function Events() {
 
       const token = localStorage.getItem("token");
 
-      const res = await axios.get("http://localhost:5001/api/events", {
+      const res = await axios.get(`${CATALOG_API}/api/events`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -4,6 +4,9 @@ import { useNavigate, Link } from "react-router-dom";
 import { FiUser, FiMail, FiLock } from "react-icons/fi";
 import { Shield, UserRound } from "lucide-react";
 
+const AUTH_API = import.meta.env.VITE_AUTH_API; 
+
+
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,7 +31,7 @@ const Register = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:5001/api/auth/register",
+        `${AUTH_API}/api/auth/register`,
         payload
       );
 

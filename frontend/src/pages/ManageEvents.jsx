@@ -13,6 +13,8 @@ import {
   X,
 } from "lucide-react";
 
+const CATALOG_API = import.meta.env.VITE_CATALOG_API;
+
 function ManageEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,19 +43,22 @@ function ManageEvents() {
   };
 
   const fetchEvents = async () => {
-    try {
-      setLoading(true);
-      const { data } = await axios.get(
-        "http://localhost:5001/api/events",
-        getAuthConfig()
-      );
-      setEvents(data);
-    } catch (error) {
-      console.error("FETCH EVENTS ERROR:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+
+    const { data } = await axios.get(
+      `${CATALOG_API}/api/events`,
+      getAuthConfig()
+    );
+
+    setEvents(Array.isArray(data) ? data : []);
+  } catch (error) {
+    console.error("FETCH EVENTS ERROR:", error);
+    setEvents([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const resetForm = () => {
     setTitle("");
@@ -92,13 +97,13 @@ function ManageEvents() {
     try {
       if (editingEvent) {
         await axios.put(
-          `http://localhost:5001/api/events/${editingEvent._id}`,
+          `${CATALOG_API}/api/events/${editingEvent._id}`,
           payload,
           getAuthConfig()
         );
       } else {
         await axios.post(
-          "http://localhost:5001/api/events",
+          `${CATALOG_API}/api/events`,
           payload,
           getAuthConfig()
         );
@@ -118,7 +123,7 @@ function ManageEvents() {
 
     try {
       await axios.delete(
-        `http://localhost:5001/api/events/${id}`,
+        `${CATALOG_API}/api/events/${id}`,
         getAuthConfig()
       );
       fetchEvents();
@@ -134,10 +139,7 @@ function ManageEvents() {
         {/* Header */}
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white/80 px-4 py-2 text-sm font-medium text-rose-700 shadow-sm">
-              <Sparkles className="h-4 w-4" />
-              Admin Event Management
-            </div>
+            
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">
               Manage Events
             </h1>

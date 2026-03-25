@@ -15,6 +15,8 @@ import {
   AlertCircle,
 } from "lucide-react";
 
+const BOOKING_API = import.meta.env.VITE_BOOKING_API;
+
 function ManageBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +39,7 @@ function ManageBookings() {
     try {
       setLoading(true);
       const { data } = await axios.get(
-        "http://localhost:5001/api/bookings",
+        `${BOOKING_API}/api/bookings`,
         getAuthConfig()
       );
       setBookings(data);
@@ -53,7 +55,7 @@ function ManageBookings() {
       setUpdatingId(bookingId);
 
       await axios.put(
-        `http://localhost:5001/api/bookings/${bookingId}/status`,
+        `${BOOKING_API}/api/bookings/${bookingId}/status`,
         { status },
         getAuthConfig()
       );
@@ -83,10 +85,7 @@ function ManageBookings() {
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white/80 px-4 py-2 text-sm font-medium text-rose-700 shadow-sm">
-            <Sparkles className="h-4 w-4" />
-            Admin Booking Management
-          </div>
+          
 
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             Manage Bookings

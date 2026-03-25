@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../utils/api";
+import axios from "axios";
 import {
   Search,
   MapPin,
@@ -11,26 +11,38 @@ import {
   Sparkles,
 } from "lucide-react";
 
+const CATALOG_API = import.meta.env.VITE_CATALOG_API;
+
+
 const Venues = () => {
   const [venues, setVenues] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("All");
   const [sortBy, setSortBy] = useState("default");
 
+  
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchVenues = async () => {
-      try {
-        const { data } = await api.get("/venues");
-        setVenues(data);
-      } catch (error) {
-        console.error("Error fetching venues:", error);
-      }
-    };
+  const fetchVenues = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-    fetchVenues();
-  }, []);
+      const { data } = await axios.get(`${CATALOG_API}/api/venues`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setVenues(data);
+    } catch (error) {
+      console.error("Error fetching venues:", error);
+    }
+  };
+
+  fetchVenues();
+}, []);
 
   const uniqueLocations = useMemo(() => {
     const locations = venues

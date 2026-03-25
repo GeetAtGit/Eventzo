@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import axios from "axios";
 
+const BOOKING_API = import.meta.env.VITE_BOOKING_API;
+
 function AdminDashboard() {
   const [statsData, setStatsData] = useState({
     totalEvents: 0,
@@ -48,7 +50,7 @@ function AdminDashboard() {
       else setRefreshing(true);
 
       const { data } = await axios.get(
-        "http://localhost:5001/api/admin/stats",
+        `${BOOKING_API}/api/admin/stats`,
         getAuthConfig()
       );
 

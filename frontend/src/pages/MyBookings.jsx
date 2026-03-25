@@ -12,6 +12,8 @@ import {
   Clock3,
 } from "lucide-react";
 
+const BOOKING_API = import.meta.env.VITE_BOOKING_API;
+
 function MyBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,22 +23,22 @@ function MyBookings() {
   }, []);
 
   const fetchBookings = async () => {
-    try {
-      const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
 
-      const res = await axios.get("http://localhost:5001/api/bookings/my", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    const { data } = await axios.get(`${BOOKING_API}/api/bookings/my`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      setBookings(res.data);
-    } catch (error) {
-      console.error("FETCH BOOKINGS ERROR:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setBookings(data); // ✅ FIXED
+  } catch (error) {
+    console.error("FETCH BOOKINGS ERROR:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (loading) {
     return (

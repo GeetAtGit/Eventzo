@@ -14,6 +14,8 @@ import {
   Users,
 } from "lucide-react";
 
+const CATALOG_API = import.meta.env.VITE_CATALOG_API;
+
 function ManageVenues() {
   const [venues, setVenues] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +47,7 @@ function ManageVenues() {
     try {
       setLoading(true);
       const { data } = await axios.get(
-        "http://localhost:5001/api/venues",
+        `${CATALOG_API}/api/venues`,
         getAuthConfig()
       );
       setVenues(data);
@@ -93,13 +95,13 @@ function ManageVenues() {
     try {
       if (editingVenue) {
         await axios.put(
-          `http://localhost:5001/api/venues/${editingVenue._id}`,
+          `${CATALOG_API}/api/venues/${editingVenue._id}`,
           payload,
           getAuthConfig()
         );
       } else {
         await axios.post(
-          "http://localhost:5001/api/venues",
+          `${CATALOG_API}/api/venues`,
           payload,
           getAuthConfig()
         );
@@ -120,7 +122,7 @@ function ManageVenues() {
 
     try {
       await axios.delete(
-        `http://localhost:5001/api/venues/${id}`,
+        `${CATALOG_API}/api/venues/${id}`,
         getAuthConfig()
       );
       fetchVenues();
@@ -135,10 +137,7 @@ function ManageVenues() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white/80 px-4 py-2 text-sm font-medium text-rose-700 shadow-sm">
-              <Sparkles className="h-4 w-4" />
-              Admin Venue Management
-            </div>
+            
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">
               Manage Venues
             </h1>

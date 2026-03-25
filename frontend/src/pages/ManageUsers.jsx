@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Mail, Shield, Sparkles, User, Users } from "lucide-react";
 
+const AUTH_API = import.meta.env.VITE_AUTH_API; 
+
+
 function ManageUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +26,7 @@ function ManageUsers() {
     try {
       setLoading(true);
       const { data } = await axios.get(
-        "http://localhost:5001/api/users",
+        `${AUTH_API}/api/users`,
         getAuthConfig()
       );
       setUsers(data);

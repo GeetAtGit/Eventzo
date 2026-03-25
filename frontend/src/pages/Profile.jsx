@@ -9,6 +9,9 @@ import {
   Sparkles,
 } from "lucide-react";
 
+const AUTH_API = import.meta.env.VITE_AUTH_API; 
+
+
 function Profile() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -59,7 +62,7 @@ function Profile() {
       }
 
       const { data } = await axios.put(
-        "http://localhost:5001/api/auth/profile",
+        `${AUTH_API}/api/auth/profile`,
         payload,
         {
           headers: {
