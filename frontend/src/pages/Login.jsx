@@ -3,6 +3,9 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { FiMail, FiLock } from "react-icons/fi";
 
+const AUTH_API = import.meta.env.VITE_AUTH_API; 
+
+
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +21,7 @@ function Login() {
     try {
       setError("");
 
-      const res = await axios.post("http://localhost:5001/api/auth/login", {
+      const res = await axios.post(`${AUTH_API}/api/auth/login`, {
         email,
         password,
       });
