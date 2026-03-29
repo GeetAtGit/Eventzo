@@ -14,6 +14,10 @@ import ManageVenues from "./pages/ManageVenues";
 import ManageBookings from "./pages/ManageBookings";
 import ManageUsers from "./pages/ManageUsers";
 import Layout from "./components/Layout";
+import BudgetDashboard from "./pages/BudgetDashboard";
+import ManageBudgets from "./pages/ManageBudgets";
+
+
 
 function App() {
   return (
@@ -60,6 +64,9 @@ function App() {
           <Route path="/admin/bookings" element={<ManageBookings />} />
           <Route path="/admin/users" element={<ManageUsers />} />
         </Route>
+
+        <Route path="/admin/budget/:eventId" element={<BudgetDashboard />} />
+        <Route path="/admin/budgets" element={<ManageBudgets />} />
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

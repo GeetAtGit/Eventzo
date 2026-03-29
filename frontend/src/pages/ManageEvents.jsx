@@ -13,7 +13,9 @@ import {
   X,
 } from "lucide-react";
 
+// API URL Constants
 const CATALOG_API = import.meta.env.VITE_CATALOG_API;
+const BUDGET_API = import.meta.env.VITE_BUDGET_API; // Ensure this is http://localhost:8081
 
 function ManageEvents() {
   const [events, setEvents] = useState([]);
@@ -43,22 +45,20 @@ function ManageEvents() {
   };
 
   const fetchEvents = async () => {
-  try {
-    setLoading(true);
-
-    const { data } = await axios.get(
-      `${CATALOG_API}/api/events`,
-      getAuthConfig()
-    );
-
-    setEvents(Array.isArray(data) ? data : []);
-  } catch (error) {
-    console.error("FETCH EVENTS ERROR:", error);
-    setEvents([]);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      const { data } = await axios.get(
+        `${CATALOG_API}/api/events`,
+        getAuthConfig()
+      );
+      setEvents(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("FETCH EVENTS ERROR:", error);
+      setEvents([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const resetForm = () => {
     setTitle("");
@@ -96,17 +96,38 @@ function ManageEvents() {
 
     try {
       if (editingEvent) {
+        // Update existing event
         await axios.put(
           `${CATALOG_API}/api/events/${editingEvent._id}`,
           payload,
           getAuthConfig()
         );
       } else {
-        await axios.post(
+        // Create new event
+        const response = await axios.post(
           `${CATALOG_API}/api/events`,
           payload,
           getAuthConfig()
         );
+
+        // --- BUDGET SERVICE INTEGRATION ---
+        // Once the event is created in the Catalog (Node.js), 
+        // we create the budget entry in Spring Boot.
+        const newEventId = response.data._id || response.data.id;
+
+        if (newEventId) {
+          try {
+            await axios.post(`${BUDGET_API}/api/budgets`, {
+              eventId: newEventId,      // Matches your Java DTO field
+              totalBudget: Number(price) // Matches your Java DTO field
+            });
+            console.log("Budget Service: Successfully initialized budget for event", newEventId);
+          } catch (budgetError) {
+            // We log the error but don't stop the flow, so the user 
+            // knows the event was saved even if the budget failed.
+            console.error("BUDGET SERVICE ERROR:", budgetError.response?.data || budgetError.message);
+          }
+        }
       }
 
       resetForm();
@@ -122,10 +143,7 @@ function ManageEvents() {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(
-        `${CATALOG_API}/api/events/${id}`,
-        getAuthConfig()
-      );
+      await axios.delete(`${CATALOG_API}/api/events/${id}`, getAuthConfig());
       fetchEvents();
     } catch (error) {
       console.error("DELETE EVENT ERROR:", error);
@@ -139,23 +157,12 @@ function ManageEvents() {
         {/* Header */}
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-              Manage Events
-            </h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Add, edit, and delete event listings from one place
-            </p>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Manage Events</h1>
+            <p className="mt-2 text-sm text-slate-500">Add, edit, and delete event listings from one place</p>
           </div>
 
           <button
-            onClick={() => {
-              if (showForm) {
-                resetForm();
-              } else {
-                setShowForm(true);
-              }
-            }}
+            onClick={() => (showForm ? resetForm() : setShowForm(true))}
             className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
           >
             {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
@@ -173,8 +180,7 @@ function ManageEvents() {
             <form onSubmit={handleSubmit} className="mt-6 grid gap-4 md:grid-cols-2">
               <div className="md:col-span-1">
                 <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
-                  <FileText className="h-4 w-4 text-slate-500" />
-                  Event Title
+                  <FileText className="h-4 w-4 text-slate-500" /> Event Title
                 </label>
                 <input
                   type="text"
@@ -187,8 +193,7 @@ function ManageEvents() {
 
               <div className="md:col-span-1">
                 <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
-                  <MapPin className="h-4 w-4 text-slate-500" />
-                  Venue
+                  <MapPin className="h-4 w-4 text-slate-500" /> Venue
                 </label>
                 <input
                   type="text"
@@ -201,8 +206,7 @@ function ManageEvents() {
 
               <div className="md:col-span-1">
                 <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
-                  <CalendarDays className="h-4 w-4 text-slate-500" />
-                  Date
+                  <CalendarDays className="h-4 w-4 text-slate-500" /> Date
                 </label>
                 <input
                   type="date"
@@ -215,8 +219,7 @@ function ManageEvents() {
 
               <div className="md:col-span-1">
                 <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
-                  <IndianRupee className="h-4 w-4 text-slate-500" />
-                  Price
+                  <IndianRupee className="h-4 w-4 text-slate-500" /> Price
                 </label>
                 <input
                   type="number"
@@ -229,8 +232,7 @@ function ManageEvents() {
 
               <div className="md:col-span-2">
                 <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
-                  <ImageIcon className="h-4 w-4 text-slate-500" />
-                  Image URL
+                  <ImageIcon className="h-4 w-4 text-slate-500" /> Image URL
                 </label>
                 <input
                   type="text"
@@ -242,8 +244,7 @@ function ManageEvents() {
 
               <div className="md:col-span-2">
                 <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
-                  <FileText className="h-4 w-4 text-slate-500" />
-                  Description
+                  <FileText className="h-4 w-4 text-slate-500" /> Description
                 </label>
                 <textarea
                   rows="4"
@@ -261,7 +262,6 @@ function ManageEvents() {
                 >
                   {editingEvent ? "Update Event" : "Create Event"}
                 </button>
-
                 <button
                   type="button"
                   onClick={resetForm}
@@ -292,42 +292,25 @@ function ManageEvents() {
               >
                 <div className="h-44 overflow-hidden bg-slate-100">
                   {event.image ? (
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="h-full w-full object-cover"
-                    />
+                    <img src={event.image} alt={event.title} className="h-full w-full object-cover" />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-slate-400">
-                      No Image
-                    </div>
+                    <div className="flex h-full items-center justify-center text-slate-400">No Image</div>
                   )}
                 </div>
 
                 <div className="p-4">
-                  <h3 className="line-clamp-1 text-lg font-semibold text-slate-900">
-                    {event.title}
-                  </h3>
-
-                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">
-                    {event.description}
-                  </p>
+                  <h3 className="line-clamp-1 text-lg font-semibold text-slate-900">{event.title}</h3>
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{event.description}</p>
 
                   <div className="mt-4 space-y-2 text-sm text-slate-600">
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-rose-500" />
                       <span className="line-clamp-1">{event.venue}</span>
                     </div>
-
                     <div className="flex items-center gap-2">
                       <CalendarDays className="h-4 w-4 text-orange-500" />
-                      <span>
-                        {event.date
-                          ? new Date(event.date).toLocaleDateString()
-                          : "No date"}
-                      </span>
+                      <span>{event.date ? new Date(event.date).toLocaleDateString() : "No date"}</span>
                     </div>
-
                     <div className="flex items-center gap-2 font-medium text-slate-800">
                       <IndianRupee className="h-4 w-4 text-emerald-600" />
                       <span>{event.price}</span>
@@ -339,16 +322,13 @@ function ManageEvents() {
                       onClick={() => handleEdit(event)}
                       className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                     >
-                      <Pencil className="h-4 w-4" />
-                      Edit
+                      <Pencil className="h-4 w-4" /> Edit
                     </button>
-
                     <button
                       onClick={() => handleDelete(event._id)}
                       className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-red-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-600"
                     >
-                      <Trash2 className="h-4 w-4" />
-                      Delete
+                      <Trash2 className="h-4 w-4" /> Delete
                     </button>
                   </div>
                 </div>

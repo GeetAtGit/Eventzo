@@ -51,7 +51,7 @@ function Navbar() {
           
           <div>
             <h1 className="text-xl font-bold tracking-tight text-slate-900">
-              Eventzo
+              EventZen
             </h1>
           </div>
         </Link>
