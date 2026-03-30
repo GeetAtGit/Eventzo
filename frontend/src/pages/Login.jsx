@@ -48,6 +48,9 @@ function Login() {
       <div className="w-full max-w-sm bg-white rounded-2xl border border-slate-200 shadow-sm p-7">
         {/* Header */}
         <div className="mb-7 text-center">
+          <h2 className="text-lg font-medium text-slate-600">
+            EventZen
+          </h2>
           <h1 className="text-2xl font-semibold text-slate-900">
             Welcome back
           </h1>

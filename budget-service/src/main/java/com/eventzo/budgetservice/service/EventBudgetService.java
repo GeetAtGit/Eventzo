@@ -3,7 +3,9 @@ package com.eventzo.budgetservice.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.eventzo.budgetservice.dto.AddExpenseRequest;
 import com.eventzo.budgetservice.dto.CreateBudgetRequest;
@@ -35,9 +37,10 @@ public class EventBudgetService {
     }
 
     public EventBudget getBudgetByEventId(String eventId) {
-        return eventBudgetRepository.findByEventId(eventId)
-                .orElseThrow(() -> new RuntimeException("Budget not found for event: " + eventId));
-    }
+    return eventBudgetRepository.findByEventId(eventId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Budget not found for event: " + eventId));
+}
 
     public BudgetExpense addExpense(AddExpenseRequest request) {
         EventBudget budget = getBudgetByEventId(request.getEventId());

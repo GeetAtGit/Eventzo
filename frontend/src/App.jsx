@@ -63,10 +63,12 @@ function App() {
           <Route path="/admin/venues" element={<ManageVenues />} />
           <Route path="/admin/bookings" element={<ManageBookings />} />
           <Route path="/admin/users" element={<ManageUsers />} />
+          <Route path="/admin/budgets" element={<ManageBudgets />} />
         </Route>
 
-        <Route path="/admin/budget/:eventId" element={<BudgetDashboard />} />
-        <Route path="/admin/budgets" element={<ManageBudgets />} />
+          <Route path="/admin/budget/:eventId" element={<BudgetDashboard />} />
+
+        
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

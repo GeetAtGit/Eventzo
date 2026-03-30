@@ -7,8 +7,9 @@ import {
   LogOut,
   LogIn,
   UserPlus,
-  Sparkles,
   UserCircle,
+  Wallet,
+  Users,
 } from "lucide-react";
 
 function Navbar() {
@@ -17,7 +18,6 @@ function Navbar() {
 
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "null");
-
   const isLoggedIn = !!token;
 
   const hideNavbar =
@@ -36,7 +36,7 @@ function Navbar() {
   const inactiveLink = "text-slate-600 hover:bg-slate-100 hover:text-slate-900";
 
   const getLinkClass = (path) =>
-    `${linkBase} ${location.pathname === path ? activeLink : inactiveLink}`;
+    `${linkBase} ${location.pathname.startsWith(path) ? activeLink : inactiveLink}`;
 
   if (hideNavbar) return null;
 
@@ -48,12 +48,9 @@ function Navbar() {
           to={user?.isAdmin ? "/admin" : "/"}
           className="flex items-center gap-2"
         >
-          
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
-              EventZen
-            </h1>
-          </div>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            EventZen
+          </h1>
         </Link>
 
         {/* Nav Links */}
@@ -61,10 +58,59 @@ function Navbar() {
           {isLoggedIn ? (
             <>
               {user?.isAdmin ? (
-                <Link to="/admin" className={getLinkClass("/admin")}>
-                  <LayoutDashboard className="h-4 w-4" />
-                  Admin Dashboard
-                </Link>
+                <>
+                  {/* Admin Dashboard */}
+                  <Link
+                    to="/admin"
+                    className={`${linkBase} ${location.pathname === "/admin" ? activeLink : inactiveLink}`}
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </Link>
+
+                  {/* Manage Events */}
+                  <Link
+                    to="/admin/events"
+                    className={getLinkClass("/admin/events")}
+                  >
+                    <CalendarDays className="h-4 w-4" />
+                    Events
+                  </Link>
+
+                  {/* Manage Venues */}
+                  <Link
+                    to="/admin/venues"
+                    className={getLinkClass("/admin/venues")}
+                  >
+                    <Building2 className="h-4 w-4" />
+                    Venues
+                  </Link>
+
+                  {/* Manage Bookings */}
+                  <Link
+                    to="/admin/bookings"
+                    className={getLinkClass("/admin/bookings")}
+                  >
+                    <ClipboardList className="h-4 w-4" />
+                    Bookings
+                  </Link>
+
+                  {/* Manage Budgets — active for /admin/budgets and /admin/budget/:id */}
+                  <Link
+                    to="/admin/budgets"
+                    className={`${linkBase} ${
+                      location.pathname.startsWith("/admin/budget")
+                        ? activeLink
+                        : inactiveLink
+                    }`}
+                  >
+                    <Wallet className="h-4 w-4" />
+                    Budgets
+                  </Link>
+
+                  {/* Manage Users */}
+                
+                </>
               ) : (
                 <>
                   <Link to="/events" className={getLinkClass("/events")}>
@@ -77,10 +123,7 @@ function Navbar() {
                     Venues
                   </Link>
 
-                  <Link
-                    to="/my-bookings"
-                    className={getLinkClass("/my-bookings")}
-                  >
+                  <Link to="/my-bookings" className={getLinkClass("/my-bookings")}>
                     <ClipboardList className="h-4 w-4" />
                     My Bookings
                   </Link>
