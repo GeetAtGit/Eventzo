@@ -1,24 +1,47 @@
 version: "3.9"
 
 services:
-  backend:
-    build: ./backend
-    container_name: eventzo_backend
+  auth-service:
+    build: ./auth-service
+    container_name: eventzo-auth-service
     ports:
       - "5001:5001"
     env_file:
-      - ./backend/.env
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
+      - ./auth-service/.env
+
+  catalog-service:
+    build: ./catalog-service
+    container_name: eventzo-catalog-service
+    ports:
+      - "5002:5002"
+    env_file:
+      - ./catalog-service/.env
+
+  booking-service:
+    build: ./booking-service
+    container_name: eventzo-booking-service
+    ports:
+      - "5003:5003"
+    env_file:
+      - ./booking-service/.env
+
+  budget-service:
+    build: ./budget-service
+    container_name: eventzo-budget-service
+    ports:
+      - "8081:8081"
+    env_file:
+      - ./budget-service/.env
 
   frontend:
     build: ./frontend
-    container_name: eventzo_frontend
+    container_name: eventzo-frontend
     ports:
       - "5173:5173"
+    env_file:
+      - ./frontend/.env
     depends_on:
-      - backend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - auth-service
+      - catalog-service
+      - booking-service
+      - budget-service
